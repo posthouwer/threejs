@@ -27,11 +27,42 @@ const torus = new THREE.Mesh(geometry, material);
 
 scene.add(torus)
 
-const pointLight = new THREE.PointLight(0xffffff)
-pointLight.position.set(100, 5, 5)
+// Space cube
+const spaceTexture = new THREE.TextureLoader().load('space.jpg');
 
-// const ambientLight = new THREE.AmbientLight(0xffffff);
-scene.add(pointLight)
+const space = new THREE.Mesh(
+  new THREE.BoxGeometry(3, 3, 3),
+  new THREE.MeshBasicMaterial({map: spaceTexture})
+);
+
+scene.add(space);
+
+// Moon
+const moonTexture = new THREE.TextureLoader().load('moon.jpg');
+const rockyTexture = new THREE.TextureLoader().load('rock.jpg');
+
+const moon = new THREE.Mesh(
+  new THREE.SphereGeometry(3, 32, 32),
+  new THREE.MeshStandardMaterial({
+    map: moonTexture,
+    normalMap: rockyTexture
+  })
+);
+
+scene.add(moon);
+
+moon.position.z = 30;
+moon.position.x = (-10);
+
+const pointLight = new THREE.PointLight(0xffffff)
+pointLight.position.set(5, 5, 5)
+
+const ambientLight = new THREE.AmbientLight(0xffffff);
+scene.add(pointLight, ambientLight)
+
+const lightHelper = new THREE.PointLightHelper(pointLight)
+const gridHelper = new THREE.GridHelper(200, 50)
+scene.add(lightHelper, gridHelper)
 
 const controls = new OrbitControls(camera, renderer.domElement);
 
@@ -51,6 +82,27 @@ Array(200).fill().forEach(addStar)
 
 // const spaceTexture = new THREE.TextureLoader().load('space.jpg');
 // scene.background = spaceTexture;
+
+// Camera movement
+
+function moveCamera() {
+
+  const t = document.body.getBoundingClientRect().top;
+
+  moon.rotation.x += 0.005;
+  moon.rotation.y += 0.0075;
+  moon.rotation.z += 0.005;
+
+  space.rotation.y += 0.01;
+  space.rotation.z += 0.01;
+  
+  camera.position.z = t * -0.01;
+  camera.position.x = t * -0.0002;
+  camera.position.y = t * -0.0002;
+}
+
+document.body.onscroll = moveCamera
+
 
 function animate() {
     requestAnimationFrame(animate);
